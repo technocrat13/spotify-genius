@@ -1,14 +1,55 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Spotify Playlist Processor</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: #EBEBEB;
+        }
+
+        .container {
+            max-width: 600px;
+        }
+
+        .form-control {
+            background-color: #282828;
+            color: #1DB954;
+            border-color: #1DB954;
+        }
+
+        .btn {
+            background-color: #1DB954;
+            border-color: #1DB954;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Spotify Playlist Processor</h1>
-    <form method="POST">
-        <label for="playlist_url">Playlist URL:</label><br>
-        <input type="text" id="playlist_url" name="playlist_url"><br>
-        <input type="submit" value="Submit">
-    </form>
+    <div class="container">
+        <h1 class="text-center my-4">Spotify Playlist Processor</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="playlist_url">Playlist URL:</label>
+                <input type="text" class="form-control" id="playlist_url" name="playlist_url">
+            </div>
+            <button type="submit" class="btn btn-block">Submit</button>
+        </form>
+        {% if playlist_name %}
+        <img src="{{ playlist_image_url }}" alt="Playlist Image" class="img-fluid mx-auto d-block">
+        <!-- Display playlist image -->
+        <h2 class="text-center my-4">{{ playlist_name }}</h2>
+        <p>{{ playlist_description }}</p>
+        <ul>
+            {% for song in song_list %}
+            <li>{{ song }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
 </body>
+
 </html>

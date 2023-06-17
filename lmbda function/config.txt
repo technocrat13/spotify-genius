@@ -1,0 +1,30 @@
+trimmed lambda layers
+use AWSSDKPandasPython39 too
+
+
+test:
+
+
+[
+  {
+    "id": "0fNY6p1S1PCwpnK9hlP4qz",
+    "name": "Pictures of You",
+    "artist": "PREP",
+    "popularity": 31,
+    "explicit": 1
+  },
+  {
+    "id": "4D7BCuvgdJlYvlX5WlN54t",
+    "name": "You're On Your Own, Kid",
+    "artist": "Taylor Swift",
+    "popularity": 31,
+    "explicit": 0
+  },
+  {
+    "id": "3fqwjXwUGN6vbzIwvyFMhx",
+    "name": "Tennessee Whiskey",
+    "artist": "Chris Stapleton",
+    "popularity": 66,
+    "explicit": 0
+  }
+]
