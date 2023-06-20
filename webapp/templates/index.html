@@ -25,12 +25,16 @@
             background-color: #1DB954;
             border-color: #1DB954;
         }
+
+        a {
+            color: white;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1 class="text-center my-4">Spotify Playlist Processor</h1>
+        <h1 class="text-center my-8">Spotify Playlist Processor</h1>
         <form method="POST">
             <div class="form-group">
                 <label for="playlist_url">Playlist URL:</label>
@@ -39,17 +43,43 @@
             <button type="submit" class="btn btn-block">Submit</button>
         </form>
         {% if playlist_name %}
-        <img src="{{ playlist_image_url }}" alt="Playlist Image" class="img-fluid mx-auto d-block">
+        <img src="{{ playlist_image_url }}" alt="Playlist Image" class="img-fluid">
         <!-- Display playlist image -->
         <h2 class="text-center my-4">{{ playlist_name }}</h2>
         <p>{{ playlist_description }}</p>
-        <ul>
-            {% for song in song_list %}
-            <li>{{ song }}</li>
-            {% endfor %}
-        </ul>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Original Songs</h3>
+                <ul>
+                    {% for song in song_list %}
+                    <li>{{ song }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!-- Add this new section for recommended tracks -->
+            {% if reco_tracks %}
+            <div class="col-md-6">
+                <h3>Recommended Tracks</h3>
+                <ul>
+                    {% for track in reco_tracks %}
+                    <li class="row align-items-center">
+                        <div class="col-2">
+                            <img src="{{ track.image_url }}" alt="Album Cover" class="img-fluid">
+                        </div>
+                        <div class="col-10">
+                            <a href="{{ track.track_url }}">{{ track.name }} by {{ track.artist }} ({{ track.album
+                                }})</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+        </div>
         {% endif %}
     </div>
+
 </body>
 
 </html>

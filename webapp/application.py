@@ -16,8 +16,30 @@ sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 s3_client = boto3.client('s3', region_name='us-east-1')
 lambda_client = boto3.client('lambda', region_name='us-east-1')
 
+def reco_info(reco_list):
+    # This is just an example. In your actual app, you would get the reco_list from your recommender system.
+    # reco_list = ['5CQ30WqJwcep0pYcV4AMNc', '2x0RZdkZcD8QRI53XT4GI5', '4VqPOruhp5EdPBeR92t6lQ']
+
+    # Get track details from Spotify
+    tracks = sp.tracks(reco_list)
+
+    # Extract the necessary details and store them in a list
+    reco_tracks = []
+    for track in tracks['tracks']:
+        reco_tracks.append({
+            'name': track['name'],
+            'artist': track['artists'][0]['name'],
+            'album': track['album']['name'],
+            'image_url': track['album']['images'][0]['url'],
+            'track_url': track['external_urls']['spotify']
+        })
+    return reco_tracks
+
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    session.clear()
     if request.method == 'POST':
         playlist_url = request.form['playlist_url']
         playlist = sp.playlist(playlist_url)
@@ -57,25 +79,41 @@ def index():
             })
             if len(batch) == 25:
                 lambda_client.invoke(
-                    FunctionName='spotify-lyrcis-getter-3',
+                    FunctionName='lambda-lyrics-getter',
                     InvocationType='Event',
                     Payload=json.dumps(batch),
                 )
                 batch = []
         if len(batch) > 0:
             lambda_client.invoke(
-                FunctionName='spotify-lyrcis-getter-3',
+                FunctionName='lambda-lyrics-getter',
                 InvocationType='Event',
                 Payload=json.dumps(batch),
             )
 
         session['song_list'] = song_list
 
-        return render_template('index.html', playlist_name=playlist_name, playlist_description=playlist_description, song_list=song_list)
+        # reply front endpoint will be here:
+
+        reco_tracks = ['7eX5SypK35V8Y9d9pS6rWy',
+                        '4fPBB44eDH71YohayI4eKV',
+                        '2M7UdnD0fEaryh8TnCvqFX',
+                        '6LqZFfv4fUP7va14Y6VW9a',
+                        ]
+        
+        reco_tracks = reco_info(reco_tracks)
+
+        return render_template('index.html', playlist_name=playlist_name, playlist_description=playlist_description, song_list=song_list, reco_tracks=reco_tracks)
     else:
         playlist_name = session.get('playlist_name')
         playlist_description = session.get('playlist_description')
         song_list = session.get('song_list')
+        # reco_tracks = ['7eX5SypK35V8Y9d9pS6rWy',
+        #                 '4fPBB44eDH71YohayI4eKV',
+        #                 '2M7UdnD0fEaryh8TnCvqFX',
+        #                 '6LqZFfv4fUP7va14Y6VW9a',
+        #                 ]
+        # reco_tracks = reco_info(reco_tracks)
 
     return render_template('index.html', playlist_name=playlist_name, playlist_description=playlist_description, song_list=song_list)
 
