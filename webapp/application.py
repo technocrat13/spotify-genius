@@ -3,6 +3,9 @@ import json
 import boto3
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+# from sagemaker.predictor import Predictor
+
+
 
 app = Flask(__name__)
 app.secret_key = 'yoursecretkey'  # Replace with your secret key
@@ -15,6 +18,9 @@ sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 
 s3_client = boto3.client('s3', region_name='us-east-1')
 lambda_client = boto3.client('lambda', region_name='us-east-1')
+sm_client = boto3.client('runtime.sagemaker', region_name='us-east-1')
+
+    
 
 def reco_info(reco_list):
     # This is just an example. In your actual app, you would get the reco_list from your recommender system.
@@ -94,12 +100,23 @@ def index():
         session['song_list'] = song_list
 
         # reply front endpoint will be here:
-
-        reco_tracks = ['7eX5SypK35V8Y9d9pS6rWy',
-                        '4fPBB44eDH71YohayI4eKV',
-                        '2M7UdnD0fEaryh8TnCvqFX',
-                        '6LqZFfv4fUP7va14Y6VW9a',
-                        ]
+        endpoint_name = 'cosine-endpoint-2023-06-21-15-23-4'
+        
+        # predictor = Predictor(endpoint_name=endpoint_name)
+        # Create a predictor for the endpoint
+        response = sm_client.invoke_endpoint(EndpointName=endpoint_name,
+                                       ContentType='text/csv',
+                                       Body=json.dumps(song_list))
+        # predictor = Predictor(endpoint_name=endpoint_name, sagemaker_session=sm_client)
+        # response = predictor.predict(json.dumps(song_list), initial_args={"ContentType": "text/csv"}).decode("utf-8")
+        # response = requests.post(predictor.endpoint, data=json.dumps(song_ids))
+        print(response)
+        reco_tracks = json.loads(response)
+        # reco_tracks = ['7eX5SypK35V8Y9d9pS6rWy',
+        #                 '4fPBB44eDH71YohayI4eKV',
+        #                 '2M7UdnD0fEaryh8TnCvqFX',
+        #                 '6LqZFfv4fUP7va14Y6VW9a',
+        #                 ]
         
         reco_tracks = reco_info(reco_tracks)
 
